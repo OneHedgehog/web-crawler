@@ -21,54 +21,66 @@ services:
       RABBITMQ_DEFAULT_USER: crawler
       RABBITMQ_DEFAULT_PASS: UMHXuMhbQypZwP
 
-  redis_master:
+  redis:
     build:
       context: .docker/redis
+    volumes:
+      - .docker/redis/redis.conf:/etc/redis/redis.conf
     ports:
-      - "6379"
-    environment:
-      - REDIS_REPLICATION_MODE=master
-      - REDIS_PASSWORD=my_master_password
+      - "6379:6379"
 
-  redis_replica:
+#  redis_replica:
+#    build:
+#      context: .docker/redis
+#    ports:
+#      - "6379"
+#    depends_on:
+#      - redis_master
+#    environment:
+#      - REDIS_REPLICATION_MODE=slave
+#      - REDIS_MASTER_HOST=redis_master
+#      - REDIS_MASTER_PORT_NUMBER=6379
+#      - REDIS_MASTER_PASSWORD=my_master_password
+#      - REDIS_PASSWORD=my_replica_password
+#    deploy:
+#      mode: replicated
+#      replicas: 3
+
+  twemproxy:
     build:
-      context: .docker/redis
+      context: .docker/twemproxy
+    volumes:
+      - .docker/twemproxy/nutcracker.yml:/opt/nutcracker.yml
+      - .docker/twemproxy/nutcracker.yml:/conf/nutcracker.yml
     ports:
-      - "6379"
-    depends_on:
-      - redis_master
-    environment:
-      - REDIS_REPLICATION_MODE=slave
-      - REDIS_MASTER_HOST=redis_master
-      - REDIS_MASTER_PORT_NUMBER=6379
-      - REDIS_MASTER_PASSWORD=my_master_password
-      - REDIS_PASSWORD=my_replica_password
-    deploy:
-      mode: replicated
-      replicas: 3
+      - "22122:22122"
 
-  rediscommander:
-    restart: always
-    image: rediscommander/redis-commander:latest
-    environment:
-      - REDIS_HOSTS=local:redis_master:6379:1:my_master_password,local:redis_replica:6379:1:my_replica_password
-    ports:
-      - "8081:8081"
-    depends_on:
-      - redis_master
+
+#  rediscommander:
+#    restart: always
+#    image: rediscommander/redis-commander:latest
+#    environment:
+#      - REDIS_HOSTS=local:redis:6379:1
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      - redis
+
   worker:
     restart: always
-    build: .
+    build:
+      context: .docker/php
     working_dir: /var/www/web-crawler-service
     volumes:
       - ./:/var/www/web-crawler-service
     entrypoint: ["php", "bin/console", "messenger:consume", "async", "-vv"]
     depends_on:
-      - rabbit_mq
-      - redis_master
       - php
-    deploy:
-      mode: replicated
-      replicas: 3
+      - redis
+      - rabbit_mq
+#    deploy:
+#      mode: replicated
+#      replicas: 3
 
 # docker-compose run php bin/console messenger:consume async -vv
+# redis-cli -h 127.0.0.1 -p 22121

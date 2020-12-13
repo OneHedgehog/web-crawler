@@ -25,12 +25,22 @@ class CrawlService
     {
         $this->bus = $bus;
         $this->client = $httpClient;
-        $this->redisClient = RedisAdapter::createConnection('redis://redis');
+        // $this->redisClient = RedisAdapter::createConnection('redis://my_master_password@redis_master:6379');
+        $this->redisClient = RedisAdapter::createConnection('redis://127.0.0.1:22121');
     }
 
 
     public function crawl($url = 'https://en.wikipedia.org/wiki/')
     {
+        $prevChecker = $this->redisClient->get('test');
+        $res = $this->redisClient->set('test', 'hui');
+        $checker = $this->redisClient->get('test');
+        echo('dfdf');
+
+        var_dump($prevChecker);
+        var_dump($res);
+        var_dump($checker);
+        return;
         $isCrawledLink = $this->redisClient->sIsMember("crawled_links_set", $url);
         if ($isCrawledLink) {
             return;
