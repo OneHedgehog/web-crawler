@@ -21,50 +21,23 @@ services:
       RABBITMQ_DEFAULT_USER: crawler
       RABBITMQ_DEFAULT_PASS: UMHXuMhbQypZwP
 
-  redis:
+  redis-cluster:
     build:
       context: .docker/redis
     volumes:
       - .docker/redis/redis.conf:/etc/redis/redis.conf
     ports:
-      - "6379:6379"
+      - "7000:7000"
+    environment:
+      STANDALONE: 'true'
+      MASTERS: 3
+      SLAVES_PER_MASTER: 1
 
-#  redis_replica:
-#    build:
-#      context: .docker/redis
-#    ports:
-#      - "6379"
-#    depends_on:
-#      - redis_master
-#    environment:
-#      - REDIS_REPLICATION_MODE=slave
-#      - REDIS_MASTER_HOST=redis_master
-#      - REDIS_MASTER_PORT_NUMBER=6379
-#      - REDIS_MASTER_PASSWORD=my_master_password
-#      - REDIS_PASSWORD=my_replica_password
-#    deploy:
-#      mode: replicated
-#      replicas: 3
-
-  twemproxy:
+  redisinsight:
     build:
-      context: .docker/twemproxy
-    volumes:
-      - .docker/twemproxy/nutcracker.yml:/opt/nutcracker.yml
-      - .docker/twemproxy/nutcracker.yml:/conf/nutcracker.yml
+      context: .docker/redisinsight
     ports:
-      - "22122:22122"
-
-
-#  rediscommander:
-#    restart: always
-#    image: rediscommander/redis-commander:latest
-#    environment:
-#      - REDIS_HOSTS=local:redis:6379:1
-#    ports:
-#      - "8081:8081"
-#    depends_on:
-#      - redis
+      - 8001:8001
 
   worker:
     restart: always
@@ -76,11 +49,11 @@ services:
     entrypoint: ["php", "bin/console", "messenger:consume", "async", "-vv"]
     depends_on:
       - php
-      - redis
+      - redis-cluster
       - rabbit_mq
-#    deploy:
-#      mode: replicated
-#      replicas: 3
+    deploy:
+      mode: replicated
+      replicas: 3
 
 # docker-compose run php bin/console messenger:consume async -vv
 # redis-cli -h 127.0.0.1 -p 22121

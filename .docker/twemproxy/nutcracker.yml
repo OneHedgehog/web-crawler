@@ -7,4 +7,4 @@ beta:
   timeout: 400
   redis: true
   servers:
-    - 172.30.0.3:6379:1 server1
+    - 127.0.0.1:6379:1 server1

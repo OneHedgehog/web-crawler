@@ -1,1 +1,2 @@
-FROM redis:6.0.9-alpine
+FROM grokzen/redis-cluster:latest
+

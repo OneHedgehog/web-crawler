@@ -11,6 +11,7 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\Cache\Adapter\RedisAdapter;
+use RedisCluster;
 use DateTime;
 
 const START_URL = 'https://en.wikipedia.org/wiki/Fabian_Ware';
@@ -25,29 +26,26 @@ class CrawlService
     {
         $this->bus = $bus;
         $this->client = $httpClient;
-        // $this->redisClient = RedisAdapter::createConnection('redis://my_master_password@redis_master:6379');
-        $this->redisClient = RedisAdapter::createConnection('redis://127.0.0.1:22121');
+        $this->redisClient  = new RedisCluster(null, [
+            '172.18.0.7:7000', '172.18.0.7:7001', '172.18.0.7:7002', // masters
+            '172.18.0.7:7003', '172.18.0.7:7004', '172.18.0.7:7005', // slaves
+            ]);
     }
 
 
     public function crawl($url = 'https://en.wikipedia.org/wiki/')
     {
-        $prevChecker = $this->redisClient->get('test');
-        $res = $this->redisClient->set('test', 'hui');
-        $checker = $this->redisClient->get('test');
-        echo('dfdf');
-
-        var_dump($prevChecker);
-        var_dump($res);
-        var_dump($checker);
-        return;
-        $isCrawledLink = $this->redisClient->sIsMember("crawled_links_set", $url);
+        $isCrawledLink = $this->redisClient->exists($url);
         if ($isCrawledLink) {
             return;
         }
 
+        if (!strpos('https://en.wikipedia.org/', $url)) {
+            return false;
+        }
+
         $res = $this->client->request('GET', START_URL);
-        $this->redisClient->sAdd("crawled_links_set", $url);
+        $this->redisClient->set($url, $url);
         $crawler = new Crawler($res->getContent(), $url);
 
         $htmlBody = $crawler->filterXPath('descendant-or-self::body');
