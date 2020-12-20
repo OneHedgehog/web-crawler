@@ -27,8 +27,8 @@ class CrawlService
         $this->bus = $bus;
         $this->client = $httpClient;
         $this->redisClient  = new RedisCluster(null, [
-            '172.18.0.7:7000', '172.18.0.7:7001', '172.18.0.7:7002', // masters
-            '172.18.0.7:7003', '172.18.0.7:7004', '172.18.0.7:7005', // slaves
+            '172.18.0.4:7000', '172.18.0.4:7001', '172.18.0.4:7002', // masters
+            '172.18.0.4:7003', '172.18.0.4:7004', '172.18.0.4:7005', // slaves
             ]);
     }
 
@@ -37,11 +37,13 @@ class CrawlService
     {
         $isCrawledLink = $this->redisClient->exists($url);
         if ($isCrawledLink) {
+            var_dump('crawled url');
             return;
         }
 
-        if (!strpos('https://en.wikipedia.org/', $url)) {
-            return false;
+        if (strpos($url, 'https://en.wikipedia.org/') === FALSE) {
+            var_dump('non wiki url');
+            return;
         }
 
         $res = $this->client->request('GET', START_URL);
@@ -68,6 +70,7 @@ class CrawlService
         }
 
         $crawledData["links"] = $stack;
+        sleep(2); // throttle
         var_dump("before dispatch");
         $this->bus->dispatch(new CrawlerMessage(serialize($crawledData)));
     }
