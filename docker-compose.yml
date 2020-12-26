@@ -53,9 +53,83 @@ services:
       - php
       - redis-cluster
       - rabbit_mq
-    deploy:
-      mode: replicated
-      replicas: 3
+#    deploy:
+#      mode: replicated
+#      replicas: 3
+
+  es01:
+    build: .docker/elasticsearch
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - http.cors.allow-origin="*"
+      - http.cors.enabled=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - .docker/elasticsearch/data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+  es02:
+    build: .docker/elasticsearch
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - .docker/elasticsearch/data02:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+  es03:
+    build: .docker/elasticsearch
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - .docker/elasticsearch/data03:/usr/share/elasticsearch/data
+    networks:
+      - elastic
+
+  elasticsearch_hq:
+    build: .docker/elasticsearch_hq
+    container_name: elasticsearch_hq
+    environment:
+      - "HQ_DEFAULT_URL=http://es01:9200"
+    ports:
+      - 5000:5000
+    networks:
+      - elastic
+    depends_on:
+      - es01
+      - es02
+      - es03
+
+networks:
+  elastic:
+    driver: bridge
 
 # docker-compose run php bin/console messenger:consume async -vv
 # redis-cli -h 127.0.0.1 -p 22121
