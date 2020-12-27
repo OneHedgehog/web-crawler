@@ -26,10 +26,10 @@ class CrawlService
     {
         $this->bus = $bus;
         $this->client = $httpClient;
-        $this->redisClient  = new RedisCluster(null, [
-            '172.18.0.4:7000', '172.18.0.4:7001', '172.18.0.4:7002', // masters
-            '172.18.0.4:7003', '172.18.0.4:7004', '172.18.0.4:7005', // slaves
-            ]);
+//        $this->redisClient  = new RedisCluster(null, [
+//            '172.18.0.4:7000', '172.18.0.4:7001', '172.18.0.4:7002', // masters
+//            '172.18.0.4:7003', '172.18.0.4:7004', '172.18.0.4:7005', // slaves
+//            ]);
     }
 
 

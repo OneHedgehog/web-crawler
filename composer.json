@@ -5,6 +5,11 @@
         "php": ">=7.2.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "composer/package-versions-deprecated": "1.11.99.1",
+        "doctrine/doctrine-bundle": "^2.2",
+        "doctrine/doctrine-migrations-bundle": "^3.0",
+        "doctrine/orm": "^2.8",
+        "friendsofsymfony/elastica-bundle": "^5.2",
         "symfony/amqp-messenger": "5.1.*",
         "symfony/console": "5.1.*",
         "symfony/css-selector": "5.1.*",
@@ -14,6 +19,7 @@
         "symfony/framework-bundle": "5.1.*",
         "symfony/http-client": "5.1.*",
         "symfony/messenger": "5.1.*",
+        "symfony/proxy-manager-bridge": "5.1.*",
         "symfony/yaml": "5.1.*"
     },
     "require-dev": {
