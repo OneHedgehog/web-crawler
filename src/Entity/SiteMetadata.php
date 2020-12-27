@@ -11,6 +11,13 @@ use Doctrine\ORM\Mapping as ORM;
 class SiteMetadata
 {
     /**
+     * @ORM\Id
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
      * @ORM\Column(type="string")
      */
     private $content;

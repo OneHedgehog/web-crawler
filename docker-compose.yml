@@ -43,18 +43,18 @@ services:
     depends_on:
       - redis-cluster
 
-  worker:
-    restart: always
-    build:
-      context: .docker/php
-    working_dir: /var/www/web-crawler-service
-    volumes:
-      - ./:/var/www/web-crawler-service
-    entrypoint: ["php", "bin/console", "messenger:consume", "async", "-vv"]
-    depends_on:
-      - php
-      - redis-cluster
-      - rabbit_mq
+#  worker:
+#    restart: always
+#    build:
+#      context: .docker/php
+#    working_dir: /var/www/web-crawler-service
+#    volumes:
+#      - ./:/var/www/web-crawler-service
+#    entrypoint: ["php", "bin/console", "messenger:consume", "async", "-vv"]
+#    depends_on:
+#      - php
+#      - redis-cluster
+#      - rabbit_mq
 #    deploy:
 #      mode: replicated
 #      replicas: 3
@@ -62,13 +62,8 @@ services:
   es01:
     build: .docker/elasticsearch
     environment:
-      - node.name=es01
       - cluster.name=es-docker-cluster
-      - discovery.seed_hosts=es02,es03
-      - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
-      - http.cors.allow-origin="*"
-      - http.cors.enabled=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ulimits:
       memlock:
@@ -83,12 +78,10 @@ services:
   es02:
     build: .docker/elasticsearch
     environment:
-      - node.name=es02
       - cluster.name=es-docker-cluster
-      - discovery.seed_hosts=es01,es03
-      - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
     ulimits:
       memlock:
         soft: -1
@@ -97,15 +90,14 @@ services:
       - .docker/elasticsearch/data02:/usr/share/elasticsearch/data
     networks:
       - elastic
+
   es03:
     build: .docker/elasticsearch
     environment:
-      - node.name=es03
       - cluster.name=es-docker-cluster
-      - discovery.seed_hosts=es01,es02
-      - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch"
     ulimits:
       memlock:
         soft: -1
@@ -114,6 +106,7 @@ services:
       - .docker/elasticsearch/data03:/usr/share/elasticsearch/data
     networks:
       - elastic
+
 
   elasticsearch_hq:
     build: .docker/elasticsearch_hq
@@ -127,7 +120,6 @@ services:
     depends_on:
       - es01
       - es02
-      - es03
 
 networks:
   elastic:
