@@ -41,15 +41,13 @@ class CrawlService
             return;
         }
 
-//        if (!strpos($url, 'https://en.wikipedia.org/')) {
-//            var_dump('leave here');
-//            return false;
-//        }
+        if (strpos($url, 'https://en.wikipedia.org/') === FALSE) {
+            var_dump('non wiki url');
+            return;
+        }
 
-        var_dump('test');
-
-
-        $res = $this->client->request('GET', START_URL);
+        $url = explode('#', $url)[0];
+        $res = $this->client->request('GET', $url);
         $this->redisClient->set($url, $url);
         $crawler = new Crawler($res->getContent(), $url);
 
@@ -57,14 +55,20 @@ class CrawlService
         $htmlTilte = $crawler->filterXPath('descendant-or-self::h1');
 
         $crawledData = [
-            'link' => START_URL,
+            'link' => $url,
             'content' => $htmlBody->text(),
             'title' => $htmlTilte->text(),
             'date_created' => new DateTime(),
             'date_updated' => null,
-            'links' => []
+            'links' => $this->getLinks($crawler)
         ];
 
+        sleep(2); // throttle
+        var_dump("before dispatch");
+        $this->bus->dispatch(new CrawlerMessage(serialize($crawledData)));
+    }
+
+    private function getLinks($crawler) {
         $links = $crawler->filter('a')->links();
 
         $stack = [];
@@ -72,9 +76,7 @@ class CrawlService
             $stack[] = $link->getUri();
         }
 
-        $crawledData["links"] = $stack;
-        var_dump("before dispatch");
-        $this->bus->dispatch(new CrawlerMessage(serialize($crawledData)));
+        return $stack;
     }
 
 }
