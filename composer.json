@@ -10,6 +10,7 @@
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.8",
         "friendsofsymfony/elastica-bundle": "^5.2",
+        "elasticsearch/elasticsearch": "~7.0",
         "symfony/amqp-messenger": "5.1.*",
         "symfony/console": "5.1.*",
         "symfony/css-selector": "5.1.*",
@@ -20,7 +21,8 @@
         "symfony/http-client": "5.1.*",
         "symfony/messenger": "5.1.*",
         "symfony/proxy-manager-bridge": "5.1.*",
-        "symfony/yaml": "5.1.*"
+        "symfony/yaml": "5.1.*",
+        "ext-redis": "*"
     },
     "require-dev": {
         "symfony/maker-bundle": "^1.23"
