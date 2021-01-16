@@ -26,9 +26,10 @@ class CrawlService
     {
         $this->bus = $bus;
         $this->client = $httpClient;
+        $host = '172.19.0.3';
         $this->redisClient  = new RedisCluster(null, [
-            '172.18.0.7:7000', '172.18.0.7:7001', '172.18.0.7:7002', // masters
-            '172.18.0.7:7003', '172.18.0.7:7004', '172.18.0.7:7005', // slaves
+            "$host:7000", "$host:7001", "$host:7002", // masters
+            "$host:7003", "$host:7004", "$host:7005", // slaves
             ]);
     }
 
@@ -40,9 +41,13 @@ class CrawlService
             return;
         }
 
-        if (!strpos('https://en.wikipedia.org/', $url)) {
-            return false;
-        }
+//        if (!strpos($url, 'https://en.wikipedia.org/')) {
+//            var_dump('leave here');
+//            return false;
+//        }
+
+        var_dump('test');
+
 
         $res = $this->client->request('GET', START_URL);
         $this->redisClient->set($url, $url);

@@ -29,6 +29,8 @@ services:
     ports:
       - "7000:7000"
     environment:
+#      IP: 0.0.0.0
+#      REDIS_CLUSTER_IP: 172.19.0.4
       STANDALONE: 'true'
       MASTERS: 3
       SLAVES_PER_MASTER: 1

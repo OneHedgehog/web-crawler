@@ -25,7 +25,7 @@ final class CrawlerMessageHandler implements MessageHandlerInterface
         var_dump($links);
         foreach ($links as $link) {
             // var_dump($link);
-            $this->crawlService->crawl($link);
+            // $this->crawlService->crawl($link);
         }
     }
 }
