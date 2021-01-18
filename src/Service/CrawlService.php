@@ -5,6 +5,7 @@ namespace App\Service;
 
 
 use App\Message\CrawlerMessage;
+use Elasticsearch\ClientBuilder;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DomCrawler\Crawler;
@@ -22,15 +23,36 @@ class CrawlService
     private $bus;
     private $redisClient;
 
+    // private  $elasticSearchClient;
+
     public function __construct(MessageBusInterface $bus, HttpClientInterface $httpClient)
     {
         $this->bus = $bus;
         $this->client = $httpClient;
-        $host = '172.19.0.3';
+        $host = '172.19.0.7';
+
+        var_dump('pre redis connect');
         $this->redisClient  = new RedisCluster(null, [
             "$host:7000", "$host:7001", "$host:7002", // masters
             "$host:7003", "$host:7004", "$host:7005", // slaves
             ]);
+
+        //       var_dump('pre elastic connect');
+//        $this->elasticSearchClient = ClientBuilder::create()
+//            ->setHosts([
+//                'es01:9200',
+//                'es02:9200',
+//                'es03:9200'
+//            ])
+//            ->build();
+//
+//
+//        $this->saveToElastic([
+//            'link' => 'test',
+//            'content' => 'test',
+//            'title' => 'test'
+//        ]);
+//        die();
     }
 
 
@@ -63,7 +85,7 @@ class CrawlService
             'links' => $this->getLinks($crawler)
         ];
 
-        sleep(2); // throttle
+        // sleep(2); // throttle
         var_dump("before dispatch");
         $this->bus->dispatch(new CrawlerMessage(serialize($crawledData)));
     }
@@ -78,5 +100,23 @@ class CrawlService
 
         return $stack;
     }
+
+//    private function saveToElastic($data) {
+//        $params = [
+//            'index' => 'web_crawler_s',
+//            'id' => $data['link'],
+//            'type' => 'links',
+//            'body'  => [
+//                'link' => $data['link'],
+//                'content' => $data['content'],
+//                'title' => $data['title']
+//            ]
+//        ];
+//
+//        $response = $this->elasticSearchClient->index($params);
+//        // print_r($response);
+//    }
+
+
 
 }

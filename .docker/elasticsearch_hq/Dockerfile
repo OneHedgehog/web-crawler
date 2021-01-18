@@ -1,0 +1,1 @@
+FROM elastichq/elasticsearch-hq
