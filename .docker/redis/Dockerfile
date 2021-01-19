@@ -1,2 +1,2 @@
-FROM grokzen/redis-cluster:latest
+FROM grokzen/redis-cluster:6.0.7
 

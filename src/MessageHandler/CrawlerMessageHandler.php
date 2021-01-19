@@ -6,15 +6,15 @@ use App\Message\CrawlerMessage;
 use App\Service\CrawlService;
 use Elasticsearch\ClientBuilder;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class CrawlerMessageHandler implements MessageHandlerInterface
 {
     private $crawlService;
     private $elasticSearchClient;
 
-    public function __construct(MessageBusInterface $bus, HttpClientInterface $httpClient, CrawlService $crawlService)
+    public function __construct(
+        CrawlService $crawlService
+    )
     {
         var_dump('pre build');
         $this->crawlService = $crawlService;
@@ -39,9 +39,7 @@ final class CrawlerMessageHandler implements MessageHandlerInterface
         $this->saveToElastic($data);
 
         $links = $data["links"];
-        var_dump($links);
         foreach ($links as $link) {
-            // var_dump($link);
             $this->crawlService->crawl($link);
         }
     }
@@ -60,6 +58,5 @@ final class CrawlerMessageHandler implements MessageHandlerInterface
 
         $response = $this->elasticSearchClient->index($params);
         print_r($response);
-        print_r('-----------------------------------');
     }
 }

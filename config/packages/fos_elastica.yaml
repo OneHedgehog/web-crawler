@@ -1,0 +1,29 @@
+# Read the documentation: https://github.com/FriendsOfSymfony/FOSElasticaBundle/blob/master/doc/setup.md
+fos_elastica:
+    clients:
+        default: { url: '%env(ELASTICSEARCH_URL)%' }
+    indexes:
+        # app: null
+        site_metadata:
+            types:
+                user:
+                    properties:
+                        content: ~
+                        title: ~
+                    persistence:
+                        # the driver can be orm, mongodb or phpcr
+                        driver: orm
+                        model: App\Entity\SiteMetadata
+                        provider: ~
+                        finder: ~
+#        site_metadata:
+#            index_name: siteMetadata
+#            persistence:
+#                # the driver can be orm, mongodb or phpcr
+#                driver: orm
+#                model:  App\Entity\SiteMetadata
+#                provider: ~
+#                finder: ~
+#            properties:
+#                content: ~
+#                title: ~

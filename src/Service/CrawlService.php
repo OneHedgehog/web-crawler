@@ -3,7 +3,6 @@
 
 namespace App\Service;
 
-
 use App\Message\CrawlerMessage;
 use Elasticsearch\ClientBuilder;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,7 +10,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\Cache\Adapter\RedisAdapter;
 use RedisCluster;
 use DateTime;
 
@@ -58,8 +56,12 @@ class CrawlService
 
     public function crawl($url = 'https://en.wikipedia.org/wiki/')
     {
+        var_dump('before_hui');
+        $hui = $this->redisClient->get('hui');
+        var_dump($hui);
         $isCrawledLink = $this->redisClient->exists($url);
         if ($isCrawledLink) {
+            var_dump('crawled url');
             return;
         }
 
