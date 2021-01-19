@@ -16,12 +16,14 @@ final class CrawlerMessageHandler implements MessageHandlerInterface
         CrawlService $crawlService
     )
     {
+        var_dump('pre build');
         $this->crawlService = $crawlService;
+        var_dump('pre elastic connect');
         $this->elasticSearchClient = ClientBuilder::create()
             ->setHosts([
-                'es01:9200',
-                'es02:9200',
-                'es03:9200'
+                'http://es01:9200',
+                'http://es02:9200',
+                'http://es03:9200'
             ])
             ->build();
 
@@ -30,8 +32,11 @@ final class CrawlerMessageHandler implements MessageHandlerInterface
     public function __invoke(CrawlerMessage $message)
     {
 
+        var_dump('pre invoke');
         $data = unserialize($message->getMessage());
-        $this->saveToElastic($message);
+        var_dump($data['link']);
+        var_dump($data['title']);
+        $this->saveToElastic($data);
 
         $links = $data["links"];
         foreach ($links as $link) {
@@ -41,8 +46,8 @@ final class CrawlerMessageHandler implements MessageHandlerInterface
 
     private function saveToElastic($data) {
         $params = [
-            'index' => 'web_crawler',
-            'id'    => $data['link'],
+            'index' => 'web_crawler_s',
+            'id' => $data['link'],
             'type' => 'links',
             'body'  => [
                 'link' => $data['link'],

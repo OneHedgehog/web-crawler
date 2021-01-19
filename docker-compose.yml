@@ -13,6 +13,7 @@ services:
     environment:
       # unlimited
       - COMPOSER_MEMORY_LIMIT=-1
+
   rabbit_mq:
     build:
       context: .docker/rabbitMQ
@@ -31,8 +32,8 @@ services:
     ports:
       - "7000:7000"
     environment:
-      IP: 172.19.0.3
-      REDIS_CLUSTER_IP: 172.19.0.3
+#      IP: 0.0.0.0
+#      REDIS_CLUSTER_IP: 172.19.0.4
       STANDALONE: 'true'
       MASTERS: 3
       SLAVES_PER_MASTER: 1
@@ -42,9 +43,7 @@ services:
       context: .docker/redisinsight
     ports:
       - 8001:8001
-    depends_on:
-      - redis-cluster
-#
+
 #  worker:
 #    restart: always
 #    build:
@@ -60,87 +59,74 @@ services:
 #    deploy:
 #      mode: replicated
 #      replicas: 3
-#    healthcheck:
-#      interval: 20s
-#      timeout: 3m
 
-#  es01:
-#    build:
-#      context: .docker/elasticsearch
-#    container_name: es01
-#    environment:
-#      - node.name=es01
-#      - cluster.name=es-docker-cluster
-#      - discovery.seed_hosts=es02 #,es03
-#      - cluster.initial_master_nodes=es01,es02 #,es03
-#      - bootstrap.memory_lock=true
-#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
-#    volumes:
-#      - .docker/elasticsearch/data01:/usr/share/elasticsearch/data
-#    ports:
-#      - 9200:9200
-#    networks:
-#      - elastic
-#  es02:
-#    build:
-#      context: .docker/elasticsearch
-#    container_name: es02
-#    environment:
-#      - node.name=es02
-#      - cluster.name=es-docker-cluster
-#      - discovery.seed_hosts=es01 #,es03
-#      - cluster.initial_master_nodes=es01,es02 #,es03
-#      - bootstrap.memory_lock=true
-#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
-#    volumes:
-#      - .docker/elasticsearch/data02:/usr/share/elasticsearch/data
-#    networks:
-#      - elastic
-#  es03:
-#    build:
-#      context: .docker/elasticsearch
-#    container_name: es03
-#    environment:
-#      - node.name=es03
-#      - cluster.name=es-docker-cluster
-#      - discovery.seed_hosts=es01,es02
-#      - cluster.initial_master_nodes=es01,es02,es03
-#      - bootstrap.memory_lock=true
-#      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
-#    volumes:
-#      - .docker/elasticsearch/data03:/usr/share/elasticsearch/data
-#    networks:
-#      - elastic
+  es01:
+    build:
+      context: .docker/elasticsearch
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - .docker/elasticsearch/data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
 
-#
-#  elasticsearch_hq:
-#    build: .docker/elasticsearch_hq
-#    container_name: elasticsearch_hq
-#    environment:
-#      - "HQ_DEFAULT_URL=http://es01:9200"
-#    ports:
-#      - 5000:5000
-#    networks:
-#      - elastic
-#    depends_on:
-#      - es01
-#      - es02
+  es02:
+    build:
+      context: .docker/elasticsearch
+    container_name: es02
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - .docker/elasticsearch/data02:/usr/share/elasticsearch/data
 
-networks:
-  elastic:
-    driver: bridge
+  es03:
+    build:
+      context: .docker/elasticsearch
+    container_name: es03
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - .docker/elasticsearch/data03:/usr/share/elasticsearch/data
+
+  elasticsearch_hq:
+    build: .docker/elasticsearch_hq
+    container_name: elasticsearch_hq
+    environment:
+      - "HQ_DEFAULT_URL=http://es01:9200"
+    ports:
+      - 5000:5000
+    depends_on:
+      - es01
+      - es02
+      - es03
 
 # docker-compose run php bin/console messenger:consume async -vv
 # redis-cli -h 127.0.0.1 -p 22121

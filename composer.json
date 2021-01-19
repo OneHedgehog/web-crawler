@@ -20,9 +20,8 @@
         "symfony/framework-bundle": "5.1.*",
         "symfony/http-client": "5.1.*",
         "symfony/messenger": "5.1.*",
-        "symfony/proxy-manager-bridge": "5.1.*",
-        "symfony/yaml": "5.1.*",
-        "ext-redis": "*"
+        "elasticsearch/elasticsearch": "~7.0",
+        "symfony/yaml": "5.1.*"
     },
     "require-dev": {
         "symfony/maker-bundle": "^1.23"
