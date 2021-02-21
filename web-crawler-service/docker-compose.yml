@@ -42,14 +42,14 @@ services:
     ports:
       - 8001:8001
 
-  worker:
-    restart: always
-    build:
-      context: .docker/php
-    working_dir: /var/www/web-crawler-service
-    volumes:
-      - ./:/var/www/web-crawler-service
-    entrypoint: ["php", "bin/console", "messenger:consume", "async", "-vv"]
+#  worker:
+#    restart: always
+#    build:
+#      context: .docker/php
+#    working_dir: /var/www/web-crawler-service
+#    volumes:
+#      - ./:/var/www/web-crawler-service
+#    entrypoint: ["php", "bin/console", "messenger:consume", "async", "-vv"]
 #    depends_on:
 #      - php
 #      - redis-cluster
