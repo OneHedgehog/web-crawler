@@ -27,7 +27,7 @@ class CrawlService
     {
         $this->bus = $bus;
         $this->client = $httpClient;
-        $host = '172.19.0.7';
+        $host = '172.18.0.2';
 
         var_dump('pre redis connect');
         $this->redisClient  = new RedisCluster(null, [

@@ -14,3 +14,6 @@ redis pass = NxeeMOVdvC1WC74B8B3WK2ImIZ6QFgfG
 
 # don't forget to install modules
 `sudo docker-compose run php composer install`
+
+# entry point
+`sudo docker-compose run php bin/console crawl`
