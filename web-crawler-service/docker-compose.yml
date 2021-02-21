@@ -8,8 +8,6 @@ services:
       - ./:/var/www/web-crawler-service
     ports:
       - "9000:9000"
-    networks:
-      - elastic
     environment:
       # unlimited
       - COMPOSER_MEMORY_LIMIT=-1
