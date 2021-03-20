@@ -4,7 +4,7 @@ need for elasticsearch cluster to work correctly
 `wsl -d docker-desktop`
 
 # need to run for win (in wsl)/linux, for elasticsearch cluster to work
-`sysctl -w vm.max_map_count=262144`
+`_sysctl -w vm.max_map_count=262144_`
 
 # need to run in linux systems to use elastic search cluster
 `chmod 777 .docker/elasticseatch -R`

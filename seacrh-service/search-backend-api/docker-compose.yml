@@ -1,0 +1,15 @@
+version: '3'
+services:
+  nodejs-service:
+    build:
+      context: .docker/nodejs
+    volumes:
+      - ./:/var/www/search-backend-api
+    working_dir: /var/www/search-backend-api
+    tty: true
+    ports:
+      - "3000:3000"
+#    networks:
+#      # naming is matter to use it from another docker-container
+#      - common-service_default
+#      - main-service_default
