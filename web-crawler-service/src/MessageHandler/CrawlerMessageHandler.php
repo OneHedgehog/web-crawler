@@ -16,9 +16,7 @@ final class CrawlerMessageHandler implements MessageHandlerInterface
         CrawlService $crawlService
     )
     {
-        var_dump('pre build');
         $this->crawlService = $crawlService;
-        var_dump('pre elastic connect');
         $this->elasticSearchClient = ClientBuilder::create()
             ->setHosts([
                 'http://es01:9200',
@@ -31,15 +29,15 @@ final class CrawlerMessageHandler implements MessageHandlerInterface
 
     public function __invoke(CrawlerMessage $message)
     {
-
-        var_dump('pre invoke');
         $data = unserialize($message->getMessage());
-        var_dump($data['link']);
-        var_dump($data['title']);
+        var_dump($data);
+        
         $this->saveToElastic($data);
 
         $links = $data["links"];
+ 
         foreach ($links as $link) {
+            sleep(5);
             $this->crawlService->crawl($link);
         }
     }

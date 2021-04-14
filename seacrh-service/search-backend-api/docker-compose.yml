@@ -1,5 +1,15 @@
 version: '3'
 services:
+  nginx-load-balancer:
+    ports:
+      - "8080:8080"
+    build:
+      context: .docker/nginx
+    volumes:
+      - .docker/nginx/log:/var/www/
+      - .docker/nginx/default.conf:/etc/nginx/sites-available/default.conf
+      - .docker/nginx/logs:/var/log/nginx
+  
   nodejs-service:
     build:
       context: .docker/nodejs
@@ -9,7 +19,16 @@ services:
     tty: true
     ports:
       - "3000:3000"
+    networks:
+      - web-crawler-service_elasticsearch-network
+#    deploy:
+#      mode: replicated
+#      replicas: 2
 #    networks:
 #      # naming is matter to use it from another docker-container
 #      - common-service_default
 #      - main-service_default
+
+networks:
+  web-crawler-service_elasticsearch-network:
+    external: true

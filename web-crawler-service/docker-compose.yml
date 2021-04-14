@@ -61,6 +61,8 @@ services:
       - .docker/elasticsearch/data01:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
+    networks:
+      - elasticsearch-network
 
   es02:
     build:
@@ -79,7 +81,9 @@ services:
         hard: -1
     volumes:
       - .docker/elasticsearch/data02:/usr/share/elasticsearch/data
-
+    networks:
+      - elasticsearch-network
+  
   es03:
     build:
       context: .docker/elasticsearch
@@ -97,6 +101,8 @@ services:
         hard: -1
     volumes:
       - .docker/elasticsearch/data03:/usr/share/elasticsearch/data
+    networks:
+      - elasticsearch-network
 
   elasticsearch_hq:
     restart: always
@@ -110,22 +116,25 @@ services:
       - es01
       - es02
       - es03
+    networks:
+      - elasticsearch-network
 
-#  worker:
-#    restart: always
-#    build:
-#      context: .docker/php
-#    working_dir: /var/www/web-crawler-service
-#    volumes:
-#      - ./:/var/www/web-crawler-service
-#    entrypoint: [ "php", "bin/console", "messenger:consume", "async", "-vv" ]
-#    depends_on:
-#      - php
-#      - redis-cluster
-#      - rabbit_mq
+  worker:
+    restart: always
+    build:
+      context: .docker/php
+    working_dir: /var/www/web-crawler-service
+    volumes:
+      - ./:/var/www/web-crawler-service
+    entrypoint: [ "php", "bin/console", "messenger:consume", "async", "-vv" ]
+    depends_on:
+      - php
+      - redis-cluster
+      - rabbit_mq
 #    deploy:
 #      mode: replicated
 #      replicas: 3
 
-# docker-compose run php bin/console messenger:consume async -vv
-# redis-cli -h 127.0.0.1 -p 22121
+networks:
+  elasticsearch-network:
+    driver: bridge

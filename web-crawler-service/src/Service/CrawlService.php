@@ -27,7 +27,7 @@ class CrawlService
     {
         $this->bus = $bus;
         $this->client = $httpClient;
-        $host = '172.18.0.2';
+        $host = '172.18.0.4';
 
         var_dump('pre redis connect');
         $this->redisClient  = new RedisCluster(null, [
@@ -56,17 +56,12 @@ class CrawlService
 
     public function crawl($url = 'https://en.wikipedia.org/wiki/')
     {
-        var_dump('before_hui');
-        $hui = $this->redisClient->get('hui');
-        var_dump($hui);
         $isCrawledLink = $this->redisClient->exists($url);
         if ($isCrawledLink) {
-            var_dump('crawled url');
             return;
         }
 
         if (strpos($url, 'https://en.wikipedia.org/') === FALSE) {
-            var_dump('non wiki url');
             return;
         }
 
@@ -87,7 +82,7 @@ class CrawlService
             'links' => $this->getLinks($crawler)
         ];
 
-        // sleep(2); // throttle
+        sleep(2); // throttle
         var_dump("before dispatch");
         $this->bus->dispatch(new CrawlerMessage(serialize($crawledData)));
     }
@@ -102,23 +97,4 @@ class CrawlService
 
         return $stack;
     }
-
-//    private function saveToElastic($data) {
-//        $params = [
-//            'index' => 'web_crawler_s',
-//            'id' => $data['link'],
-//            'type' => 'links',
-//            'body'  => [
-//                'link' => $data['link'],
-//                'content' => $data['content'],
-//                'title' => $data['title']
-//            ]
-//        ];
-//
-//        $response = $this->elasticSearchClient->index($params);
-//        // print_r($response);
-//    }
-
-
-
 }
