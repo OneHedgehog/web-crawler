@@ -9,6 +9,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import MicIcon from '@material-ui/icons/Mic'
 import { Typography } from '@material-ui/core';
 
+import store from '../../stores/app.store'
+import {searchRequestAction} from '../../actions'
+
 const useStyles = makeStyles((theme) => ({
     mainHeader: {
       textAlign: 'center',
@@ -44,10 +47,18 @@ function Header() {
       setSearch(e.target.value)
     }
 
+    const onSearchRequest = (e) => {
+      e.preventDefault();
+      const query = { search } 
+      window.history.replaceState(null, null, `?search=${query.search}`);
+      store.dispatch(searchRequestAction(query.search));
+      console.log(store.getState());
+    }
+
     return(
         <div>
           <Typography className={classes.mainHeader} variant="h1">Web Crawler Search</Typography>
-          <Paper component="form" className={classes.root}>
+          <Paper component="form" className={classes.root} onSubmit={onSearchRequest}>
             <InputBase
               className={classes.input}
               placeholder="Search"
