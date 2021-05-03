@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
@@ -48,6 +48,12 @@ function Header() {
     const defaultSearchVal =  getSearchFromUrl();
     const [search, setSearch] = useState(defaultSearchVal);
 
+    useEffect(() => {
+      if (search.length > 0) {
+        onSearchRequest();
+      }
+    }, []);
+
     const onSearchInputChange = (e) => {
       setSearch(e.target.value)
     }
@@ -62,9 +68,6 @@ function Header() {
       store.dispatch(fetchSearchResults(query.search));
     }
 
-    if (search.length > 0) {
-      onSearchRequest();
-    }
 
     return(
         <div>
