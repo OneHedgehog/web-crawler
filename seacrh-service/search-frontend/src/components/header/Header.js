@@ -9,8 +9,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import MicIcon from '@material-ui/icons/Mic'
 import { Typography } from '@material-ui/core';
 
-import store from '../../stores/app.store'
-import {searchRequestAction} from '../../actions'
+import store from '../../stores/app.store';
+import {fetchSearchResults} from '../../thunks';
 
 const useStyles = makeStyles((theme) => ({
     mainHeader: {
@@ -37,22 +37,33 @@ const useStyles = makeStyles((theme) => ({
       margin: 4,
     },
   }));
-  
+
+const getSearchFromUrl = () => {
+  const url = new URL(window.location.href);
+  return url.searchParams.get('search') || '';
+}  
 
 function Header() {
     const classes = useStyles();
-    const [search, setSearch] = useState('');
+    const defaultSearchVal =  getSearchFromUrl();
+    const [search, setSearch] = useState(defaultSearchVal);
 
     const onSearchInputChange = (e) => {
       setSearch(e.target.value)
     }
 
     const onSearchRequest = (e) => {
-      e.preventDefault();
+      if (e) {
+        e.preventDefault();
+      }
+
       const query = { search } 
       window.history.replaceState(null, null, `?search=${query.search}`);
-      store.dispatch(searchRequestAction(query.search));
-      console.log(store.getState());
+      store.dispatch(fetchSearchResults(query.search));
+    }
+
+    if (search.length > 0) {
+      onSearchRequest();
     }
 
     return(

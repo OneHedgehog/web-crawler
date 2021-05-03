@@ -10,7 +10,7 @@ export const searchRequestAction = query => ({
 });
 
 export const searchRequestSuccessAction = searchResponse => ({
-  type: SEARCH_REQUEST,
+  type: SEARCH_REQUEST_SUCCESS,
   payload: {
     data: searchResponse
   }
@@ -19,7 +19,7 @@ export const searchRequestSuccessAction = searchResponse => ({
 
 
 export const searchRequestErrorAction = err => ({
-  type: SEARCH_REQUEST,
+  type: SEARCH_REQUEST_FAILURE,
   payload: {
     error: err
   }

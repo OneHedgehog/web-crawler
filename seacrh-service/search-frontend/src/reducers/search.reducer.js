@@ -8,18 +8,15 @@ const initialState = {
 };
 
 export default function(state = initialState, action) {
-    console.log('type = ', action.type);
-    console.log('sr =', SEARCH_REQUEST);
-    console.log('payload = ', action.payload);
 
     switch (action.type) {
         case SEARCH_REQUEST: {
             const { query } = action.payload;
 
-            console.log('right type was picked');
             return {
+                ...state,
                 query: query,
-                ...state
+                isLoading: true,
             }
         }
 
