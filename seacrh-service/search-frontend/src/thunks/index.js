@@ -1,7 +1,7 @@
 import {searchRequestAction, searchRequestSuccessAction, searchRequestErrorAction} from '../actions/index'
 
 const fetchSearchData = async searchString => {
-    const searchDataResponse = await fetch(`http://localhost:3000/?search=${searchString}`);
+    const searchDataResponse = await fetch(`http://localhost:4222?search=${searchString}`);
     return searchDataResponse.json()
 }
 

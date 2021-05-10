@@ -1,26 +1,5 @@
-export const SEARCH_REQUEST = 'SEARCH_REQUEST'
-export const SEARCH_REQUEST_SUCCESS = 'SEARCH_REQUEST_SUCCESS'
-export const SEARCH_REQUEST_FAILURE = 'SEARCH_REQUEST_FAILURE'
+import {SEARCH_REQUEST, SEARCH_REQUEST_SUCCESS, SEARCH_REQUEST_FAILURE, searchRequestAction, searchRequestSuccessAction, searchRequestErrorAction} from './search.action'
+import {TOAST_SUCCESS, TOAST_FAILURE, toastSuccessAction, toastFailureAction} from './toast.action'
 
-export const searchRequestAction = query => ({
-  type: SEARCH_REQUEST,
-  payload: {
-    query
-  }
-});
-
-export const searchRequestSuccessAction = searchResponse => ({
-  type: SEARCH_REQUEST_SUCCESS,
-  payload: {
-    data: searchResponse
-  }
-});
-
-
-
-export const searchRequestErrorAction = err => ({
-  type: SEARCH_REQUEST_FAILURE,
-  payload: {
-    error: err
-  }
-});
+export {SEARCH_REQUEST, SEARCH_REQUEST_SUCCESS, SEARCH_REQUEST_FAILURE, searchRequestAction, searchRequestSuccessAction, searchRequestErrorAction};
+export {TOAST_SUCCESS, TOAST_FAILURE, toastSuccessAction, toastFailureAction};

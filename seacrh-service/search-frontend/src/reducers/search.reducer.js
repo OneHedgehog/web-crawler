@@ -25,7 +25,8 @@ export default function(state = initialState, action) {
 
             return {
                 ...state,
-                searchData: data
+                searchData: data,
+                isLoading: false
             }
         }
 
@@ -34,7 +35,8 @@ export default function(state = initialState, action) {
 
             return {
                 ...state,
-               error
+               error,
+               isLoading: false
             }
         }
 

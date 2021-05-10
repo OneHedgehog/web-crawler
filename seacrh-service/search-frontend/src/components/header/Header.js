@@ -66,6 +66,8 @@ function Header() {
       const query = { search } 
       window.history.replaceState(null, null, `?search=${query.search}`);
       store.dispatch(fetchSearchResults(query.search));
+
+      console.log(store.getState());
     }
 
 
