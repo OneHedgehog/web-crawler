@@ -52,6 +52,7 @@ function Header() {
       if (search.length > 0) {
         onSearchRequest();
       }
+
     }, []);
 
     const onSearchInputChange = (e) => {
@@ -66,10 +67,10 @@ function Header() {
       const query = { search } 
       window.history.replaceState(null, null, `?search=${query.search}`);
       store.dispatch(fetchSearchResults(query.search));
-
-      console.log(store.getState());
     }
 
+
+    console.log('state from render', store.getState());
 
     return(
         <div>

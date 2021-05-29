@@ -1,5 +1,5 @@
-import {searchRequestAction, searchRequestSuccessAction, searchRequestErrorAction} from '../actions/index'
-
+import {searchRequestAction, searchRequestSuccessAction, searchRequestErrorAction, showToast} from '../actions/index'
+ 
 const fetchSearchData = async searchString => {
     const searchDataResponse = await fetch(`http://localhost:4222?search=${searchString}`);
     return searchDataResponse.json()
@@ -12,5 +12,6 @@ export const fetchSearchResults = (searchString) => async (dispatch) => {
         dispatch(searchRequestSuccessAction(searchData));
     } catch (e) {
         dispatch(searchRequestErrorAction(e));
+        dispatch(showToast(e.message, 'error'));
     }
 }

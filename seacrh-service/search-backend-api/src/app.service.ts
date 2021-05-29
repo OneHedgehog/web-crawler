@@ -15,6 +15,7 @@ export class AppService {
   search(query: string): Observable<any> {
     const elasticSearchResponse$: Observable<any> = from(this.elasticsearchService.search({
       index: 'web_crawler_s',
+      track_total_hits: true,
       body: {
         query: {
           match_phrase: {
@@ -22,15 +23,36 @@ export class AppService {
           }
         },
         highlight: {
+          pre_tags: ["<b>"], 
+          post_tags: ["</b>"], 
+          fragment_size: 300,
+          number_of_fragments : 1,
           fields: {
             content: {}
           }
-        }
+        },
+        from: 0,
+        size: 9
       }
     })).pipe(
-      map((elasticSearchResponse: any): string => {
+      map((elasticSearchResponse: any): any => {
         const hits = elasticSearchResponse.body.hits.hits;
-        return hits.flatMap(hit => hit.highlight.content);
+        const content = hits.flatMap(hit => hit.highlight.content);
+
+       const hitsData = hits.map(hit => {
+          return {
+            link: hit._source.link,
+            content: hit.highlight.content[0]
+          }
+        })
+
+        return {
+          size: elasticSearchResponse.body.hits.total.value,
+          searchResults: hitsData,
+          
+        }
+
+        console.log(hitsData);
       })
     )
 

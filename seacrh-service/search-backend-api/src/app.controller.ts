@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { query } from 'express';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { AppService } from './app.service';
 
 interface SearchQueryParams {
@@ -13,7 +13,14 @@ export class AppController {
 
   @Get()
   search(@Query() queryParams: SearchQueryParams): Observable<any> {
-    console.log('params', queryParams);
-    return this.appService.search(queryParams.search);
+    try {
+      return this.appService.search(queryParams.search);
+    } catch (err: Error | any) {
+      return of({
+        name: 'error prototype',
+        message: 'message prototype'
+      })
+    }
+
   }
 }

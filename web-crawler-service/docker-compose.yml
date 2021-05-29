@@ -61,6 +61,11 @@ services:
       - .docker/elasticsearch/data01:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
+    deploy:
+      resources: 
+        limits: 
+          cpus: "0.50"
+          memory: 50M 
     networks:
       - elasticsearch-network
 
@@ -83,6 +88,11 @@ services:
       - .docker/elasticsearch/data02:/usr/share/elasticsearch/data
     networks:
       - elasticsearch-network
+    deploy:
+      resources: 
+        limits: 
+          cpus: "0.50"
+          memory: 50M 
   
   es03:
     build:
@@ -103,6 +113,11 @@ services:
       - .docker/elasticsearch/data03:/usr/share/elasticsearch/data
     networks:
       - elasticsearch-network
+    deploy:
+      resources: 
+        limits: 
+          cpus: "0.50"
+          memory: 50M 
 
   elasticsearch_hq:
     restart: always

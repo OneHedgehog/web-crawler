@@ -1,19 +1,21 @@
-export const TOAST_SUCCESS = 'TOAST_SUCCESS'
-export const TOAST_FAILURE = 'TOAST_FAILURE'
+export const SHOW_TOAST = 'SHOW_TOAST';
+export const HIDE_TOAST = 'HIDE_TOAST';
 
   
-export const toastSuccessAction = toastMessage => ({
-    type: TOAST_SUCCESS,
+export const showToast = (toastMessage, toastType) => 
+{
+  return ({
+    type: SHOW_TOAST,
     payload: {
-        toastMessage
+      toastType,
+      toastMessage
     }
-  });
-  
-  
-  
-export const toastFailureAction = toastMessage => ({
-    type: TOAST_FAILURE,
-    payload: {
-        toastMessage
-    }
-  });
+  })
+}
+
+export const hideToast = (index) => {
+  return ({
+    type: HIDE_TOAST,
+    payload: index
+  })
+}
