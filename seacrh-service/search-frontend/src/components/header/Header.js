@@ -24,11 +24,8 @@ import store from '../../stores/app.store';
 import {fetchSearchResults} from '../../thunks';
 
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
-const SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
 
 const recognition = new SpeechRecognition();
-const speechRecognitionList = new SpeechGrammarList();
 
 recognition.lang = 'en-US';
 recognition.maxAlternatives = 10; // possible need more then one
