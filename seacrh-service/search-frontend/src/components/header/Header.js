@@ -12,6 +12,18 @@ import { Typography } from '@material-ui/core';
 import store from '../../stores/app.store';
 import {fetchSearchResults} from '../../thunks';
 
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SpeechGrammarList = window.SpeechGrammarList || window.webkitSpeechGrammarList;
+const SpeechRecognitionEvent = window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
+
+const recognition = new SpeechRecognition();
+const speechRecognitionList = new SpeechGrammarList();
+
+recognition.lang = 'en-US';
+recognition.maxAlternatives = 10; // possible need more then one
+recognition.interimResults = false;
+recognition.continuous = false;
+
 const useStyles = makeStyles((theme) => ({
     mainHeader: {
       textAlign: 'center',
@@ -69,8 +81,21 @@ function Header() {
       store.dispatch(fetchSearchResults(query.search));
     }
 
+    const onVoiceRecognition = () => {
+      console.log('speech start');
+      recognition.start();
+    }
 
-    console.log('state from render', store.getState());
+    recognition.onresult = function(event) {
+      console.log('event', event);
+      console.log('all vals',  event.results[0]);
+      console.log('first val', event.results[0][0].transcript);
+    }
+
+    recognition.onspeechend = function() {
+      console.log('speech end');
+      recognition.stop();
+    }
 
     return(
         <div>
@@ -87,7 +112,7 @@ function Header() {
               <SearchIcon />
             </IconButton>
             <Divider className={classes.divider} orientation="vertical" />
-            <IconButton color="primary" className={classes.iconButton} aria-label="directions">
+            <IconButton color="primary" className={classes.iconButton} aria-label="directions" onClick={onVoiceRecognition}>
               <MicIcon />
             </IconButton>
           </Paper>
