@@ -7,6 +7,17 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import MicIcon from '@material-ui/icons/Mic'
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+
+import LinearProgress from '@material-ui/core/LinearProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 import { Typography } from '@material-ui/core';
 
 import store from '../../stores/app.store';
@@ -59,6 +70,10 @@ function Header() {
     const classes = useStyles();
     const defaultSearchVal =  getSearchFromUrl();
     const [search, setSearch] = useState(defaultSearchVal);
+    const [voiceModal, toggleVoiceModal] = useState(false);
+    const [voiceRecognizedWords, setVoiceRecognizedWords] = useState([]);
+    const [speechRegognizedPressed, setSpeechRecognizedPressed] = useState(false);
+    const [speechRecognitionProcessing, setSeechRecognitionProcessing] = useState(false);
 
     useEffect(() => {
       if (search.length > 0) {
@@ -67,38 +82,63 @@ function Header() {
 
     }, []);
 
-    const onSearchInputChange = (e) => {
-      setSearch(e.target.value)
+    const onSearchInputChange = e => {
+      setSearch(e.target.value);
     }
 
-    const onSearchRequest = (e) => {
+    const onSearchRequest = e => {
       if (e) {
         e.preventDefault();
       }
 
-      const query = { search } 
+      const query = { search }; 
       window.history.replaceState(null, null, `?search=${query.search}`);
       store.dispatch(fetchSearchResults(query.search));
     }
 
     const onVoiceRecognition = () => {
-      console.log('speech start');
+      setSeechRecognitionProcessing(true);
+      setSpeechRecognizedPressed(true);
+      toggleVoiceModal(true);
       recognition.start();
     }
 
-    recognition.onresult = function(event) {
-      console.log('event', event);
-      console.log('all vals',  event.results[0]);
-      console.log('first val', event.results[0][0].transcript);
+    recognition.onresult = event => {
+      setSeechRecognitionProcessing(false);
+      setVoiceRecognizedWords(Array.from(event.results[0]).map((voiceRecognizedResult) => {
+        return voiceRecognizedResult.transcript;
+      }));
     }
 
-    recognition.onspeechend = function() {
-      console.log('speech end');
+    recognition.onspeechend = () => {
       recognition.stop();
+    }
+
+    const handleVoiceRegonizedSentenceClick = sentence => {
+      setSpeechRecognizedPressed(false);
+      toggleVoiceModal(false);
+      setSearch(sentence);
+      window.history.replaceState(null, null, `?search=${sentence}`);
+      store.dispatch(fetchSearchResults(sentence));
     }
 
     return(
         <div>
+          <Dialog open={voiceModal}>
+            <DialogTitle>Voice recognition possible results:</DialogTitle>
+            {speechRecognitionProcessing 
+              ?   <LinearProgress />
+              :   <List>
+                    {voiceRecognizedWords.map((sentence, key) => {
+                      return (
+                        <ListItem key={key} button onClick={handleVoiceRegonizedSentenceClick.bind(this, sentence)}>
+                          <ListItemText primary={sentence} />
+                        </ListItem>
+                      )
+                    })}
+                  </List>
+            }
+          </Dialog>
           <Typography className={classes.mainHeader} variant="h1">Web Crawler Search</Typography>
           <Paper component="form" className={classes.root} onSubmit={onSearchRequest}>
             <InputBase
@@ -113,7 +153,7 @@ function Header() {
             </IconButton>
             <Divider className={classes.divider} orientation="vertical" />
             <IconButton color="primary" className={classes.iconButton} aria-label="directions" onClick={onVoiceRecognition}>
-              <MicIcon />
+              {speechRegognizedPressed ? <CircularProgress /> : <MicIcon />}
             </IconButton>
           </Paper>
         </div>     
