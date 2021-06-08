@@ -11,7 +11,7 @@ export default function(state = initialState, action) {
 
     switch (action.type) {
         case SEARCH_REQUEST: {
-            const { query } = action.payload;
+            const { query, page } = action.payload;
 
             return {
                 ...state,

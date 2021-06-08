@@ -6,13 +6,17 @@ import { map } from 'rxjs/operators'
 @Injectable()
 export class AppService {
 
+  private static readonly PAGE_OFFSET = 5;
+
   constructor(
     private readonly elasticsearchService: ElasticsearchService
   ) {
 
   }
 
-  search(query: string): Observable<any> {
+  search(query: string, page: string): Observable<any> {
+    const fromPage =  (Number(page) - 1) * AppService.PAGE_OFFSET;
+    const toPage = fromPage + 5;
     const elasticSearchResponse$: Observable<any> = from(this.elasticsearchService.search({
       index: 'web_crawler_s',
       track_total_hits: true,
@@ -31,8 +35,8 @@ export class AppService {
             content: {}
           }
         },
-        from: 0,
-        size: 9
+        from: fromPage,
+        size: toPage
       }
     })).pipe(
       map((elasticSearchResponse: any): any => {
@@ -51,8 +55,6 @@ export class AppService {
           searchResults: hitsData,
           
         }
-
-        console.log(hitsData);
       })
     )
 

@@ -5,4 +5,5 @@ import toastReducer from "./toast.reducer";
 export default combineReducers({
     search: searchReducer,
     toast: toastReducer,
+    pagination: null
 });

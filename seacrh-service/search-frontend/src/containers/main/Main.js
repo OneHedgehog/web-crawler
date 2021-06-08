@@ -20,17 +20,19 @@ function Main() {
 
     const classes = useStyles();
 
-    const loader =  isLoading ? <LinearProgress /> : '';
+    const loader =  isLoading ? <LinearProgress className='progressbar' /> : '';
 
     return (
-        <main className="search-results" className={classes.root}>
+        <main className="search-results">
             {loader}
-            {searchDataResults.map((searchDataResult, key) => 
+            {searchDataResults && searchDataResults.searchResults
+            ? searchDataResults.searchResults.map((searchDataResult, key) => 
             <Section
                 key={key}     
                 link={searchDataResult.link}
                 text={searchDataResult.content}
-            />)}
+            />)
+            : ''}
         </main>
     );
 }

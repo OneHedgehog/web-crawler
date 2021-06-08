@@ -17,3 +17,6 @@ redis pass = NxeeMOVdvC1WC74B8B3WK2ImIZ6QFgfG
 
 # entry point
 `sudo docker-compose run php bin/console crawl`
+
+# create swarm
+`sudo docker swarm init --advertise-addr 192.168.99.101`

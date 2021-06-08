@@ -1,7 +1,9 @@
-
+.progressbar {
+    width: 408px;
+    margin: 0 auto;
+}
 
 .search-results {
-    padding: 15px;
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap;
 }
