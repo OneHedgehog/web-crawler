@@ -66,5 +66,6 @@ RUN pecl install -o -f redis \
     &&  rm -rf /tmp/pear \
     &&  docker-php-ext-enable redis
 
+RUN setsebool -P httpd_can_network_connect 1
 # service name shoud change if needed
 # CMD  php bin/console rabbitmq:consumer user_mailing -vvv

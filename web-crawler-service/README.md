@@ -20,3 +20,11 @@ redis pass = NxeeMOVdvC1WC74B8B3WK2ImIZ6QFgfG
 
 # create swarm
 `sudo docker swarm init --advertise-addr 192.168.99.101`
+
+# stop workers
+`sudo docker-compose run php bin/console messenger:stop-workers`
+
+# scale workers and run
+`docker-compose scale web=2 worker=3`
+`docker compose up worker`
+`docker compose run worker` ?

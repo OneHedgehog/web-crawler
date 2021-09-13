@@ -11,6 +11,9 @@ services:
     environment:
       # unlimited
       - COMPOSER_MEMORY_LIMIT=-1
+    networks:
+      - elasticsearch-network
+      - default
 
   rabbit_mq:
     build:
@@ -129,18 +132,21 @@ services:
     networks:
       - elasticsearch-network
 
-  # worker:
-  #   restart: always
-  #   build:
-  #     context: .docker/php
-  #   working_dir: /var/www/web-crawler-service
-  #   volumes:
-  #     - ./:/var/www/web-crawler-service
-  #   entrypoint: [ "php", "bin/console", "messenger:consume", "async", "-vv" ]
-  #   depends_on:
-  #     - php
-  #     - redis-cluster
-  #     - rabbit_mq
+  worker:
+    restart: always
+    build:
+      context: .docker/php
+    working_dir: /var/www/web-crawler-service
+    volumes:
+      - ./:/var/www/web-crawler-service
+    entrypoint: [ "php", "bin/console", "messenger:consume", "async", "-vv" ]
+    depends_on:
+      - php
+      - redis-cluster
+      - rabbit_mq
+    networks:
+      - default
+      - elasticsearch-network
   #  deploy:
   #    mode: replicated
   #    replicas: 3

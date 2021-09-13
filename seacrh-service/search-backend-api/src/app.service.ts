@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators'
 @Injectable()
 export class AppService {
 
-  private static readonly PAGE_OFFSET = 5;
+  private static readonly PAGE_OFFSET = 10;
 
   constructor(
     private readonly elasticsearchService: ElasticsearchService
@@ -16,7 +16,7 @@ export class AppService {
 
   search(query: string, page: string): Observable<any> {
     const fromPage =  (Number(page) - 1) * AppService.PAGE_OFFSET;
-    const toPage = fromPage + 5;
+    const toPage = fromPage + AppService.PAGE_OFFSET;
     const elasticSearchResponse$: Observable<any> = from(this.elasticsearchService.search({
       index: 'web_crawler_s',
       track_total_hits: true,

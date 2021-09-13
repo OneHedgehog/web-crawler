@@ -5,56 +5,32 @@ namespace App\MessageHandler;
 use App\Message\CrawlerMessage;
 use App\Service\CrawlService;
 use Elasticsearch\ClientBuilder;
+use App\Service\ElasticSearchService;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 final class CrawlerMessageHandler implements MessageHandlerInterface
 {
     private $crawlService;
-    private $elasticSearchClient;
+    private $elasticSearchService;
 
     public function __construct(
-        CrawlService $crawlService
+        CrawlService $crawlService,
+        ElasticSearchService $elasticSearchService
     )
     {
         $this->crawlService = $crawlService;
-        $this->elasticSearchClient = ClientBuilder::create()
-            ->setHosts([
-                'http://es01:9200',
-                'http://es02:9200',
-                'http://es03:9200'
-            ])
-            ->build();
-
+        $this->elasticSearchService = $elasticSearchService;
     }
 
     public function __invoke(CrawlerMessage $message)
     {
+        var_dump("message received");
         $data = unserialize($message->getMessage());
-        var_dump($data);
-        
-        $this->saveToElastic($data);
-
+        $this->elasticSearchService->save($data);
         $links = $data["links"];
  
         foreach ($links as $link) {
-            sleep(5);
             $this->crawlService->crawl($link);
         }
-    }
-
-    private function saveToElastic($data) {
-        $params = [
-            'index' => 'web_crawler_s',
-            'id' => $data['link'],
-            'type' => 'links',
-            'body'  => [
-                'link' => $data['link'],
-                'content' => $data['content'],
-                'title' => $data['title']
-            ]
-        ];
-
-        $response = $this->elasticSearchClient->index($params);
-        print_r($response);
     }
 }

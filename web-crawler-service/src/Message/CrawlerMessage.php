@@ -8,7 +8,6 @@ final class CrawlerMessage
 
      public function __construct(string $message)
      {
-         var_dump("message constructed");
          $this->message = $message;
      }
 

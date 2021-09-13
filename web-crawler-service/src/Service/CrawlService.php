@@ -10,6 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use App\Service\ElasticSearchService;
 use RedisCluster;
 use DateTime;
 
@@ -20,37 +21,20 @@ class CrawlService
     private $client;
     private $bus;
     private $redisClient;
+    private $elasticSearchService;
 
-    // private  $elasticSearchClient;
-
-    public function __construct(MessageBusInterface $bus, HttpClientInterface $httpClient)
+    public function __construct(MessageBusInterface $bus, HttpClientInterface $httpClient, ElasticSearchService $elasticSearchService)
     {
         $this->bus = $bus;
         $this->client = $httpClient;
-        $host = '172.18.0.4';
+        $this->elasticSearchService = $elasticSearchService;
+        $host = '172.18.0.6';
 
         var_dump('pre redis connect');
         $this->redisClient  = new RedisCluster(null, [
             "$host:7000", "$host:7001", "$host:7002", // masters
             "$host:7003", "$host:7004", "$host:7005", // slaves
             ]);
-
-        //       var_dump('pre elastic connect');
-//        $this->elasticSearchClient = ClientBuilder::create()
-//            ->setHosts([
-//                'es01:9200',
-//                'es02:9200',
-//                'es03:9200'
-//            ])
-//            ->build();
-//
-//
-//        $this->saveToElastic([
-//            'link' => 'test',
-//            'content' => 'test',
-//            'title' => 'test'
-//        ]);
-//        die();
     }
 
 
@@ -83,7 +67,10 @@ class CrawlService
         ];
 
         sleep(2); // throttle
-        var_dump("before dispatch");
+        var_dump("before dispatch & elastic save");
+
+
+        $this->elasticSearchService->save($crawledData);
         $this->bus->dispatch(new CrawlerMessage(serialize($crawledData)));
     }
 

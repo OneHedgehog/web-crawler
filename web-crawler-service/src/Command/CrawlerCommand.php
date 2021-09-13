@@ -30,7 +30,6 @@ class CrawlerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
 
-        var_dump('execution started');
         $this->crawlService->crawl();
         return Command::SUCCESS;
     }
