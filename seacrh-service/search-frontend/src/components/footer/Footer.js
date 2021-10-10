@@ -26,7 +26,7 @@ const useStyles = makeStyles({
     }
 });
 
-const RECORDS_PER_PAGE = 5;
+const RECORDS_PER_PAGE = 10;
 
 function Footer() {
     const classes = useStyles();
@@ -37,7 +37,6 @@ function Footer() {
 
     const handlePageChange = (e , newPage) => {
         setPage(newPage);
-        console.log('newPage', newPage);
         store.dispatch(fetchSearchResults(searchQuery, newPage));
     }
 

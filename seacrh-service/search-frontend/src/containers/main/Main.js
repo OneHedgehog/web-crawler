@@ -31,6 +31,7 @@ function Main() {
                 key={key}     
                 link={searchDataResult.link}
                 text={searchDataResult.content}
+                title={searchDataResult.title}
             />)
             : ''}
         </main>
