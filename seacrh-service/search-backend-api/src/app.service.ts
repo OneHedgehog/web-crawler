@@ -46,6 +46,7 @@ export class AppService {
        const hitsData = hits.map(hit => {
           return {
             link: hit._source.link,
+            title: hit._source.title,
             content: hit.highlight.content[0]
           }
         })
